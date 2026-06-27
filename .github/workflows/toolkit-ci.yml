@@ -24,6 +24,7 @@ jobs:
         with:
           project: .
           config: godot-project-doctor.toml
+          checks: export,input,signals,mobile_perf
           reports-dir: reports/godot-project-doctor
           fail-on: none
           output-formats: json,markdown,html
