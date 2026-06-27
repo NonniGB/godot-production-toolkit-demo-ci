@@ -12,6 +12,9 @@ The workflow runs:
 The project files are synthetic and intentionally small. They are only here to
 make the CI workflow easy to inspect and copy.
 
+The fixture is MIT licensed so its workflow and tiny Godot files can be copied
+into test projects.
+
 ## Run Locally
 
 Install the toolkit packages from the source repository, then run the same
@@ -36,4 +39,3 @@ After the GitHub Actions workflow completes, open the run artifacts:
 
 - `godot-doctor-reports`: raw toolkit summaries.
 - `release-dashboard`: static dashboard built from those summaries.
-
