@@ -1,0 +1,31 @@
+config_version=5
+
+[application]
+config/name="Toolkit CI Demo"
+run/main_scene="res://scenes/main.tscn"
+
+[display]
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=1
+
+[rendering]
+renderer/rendering_method="mobile"
+textures/canvas_textures/default_texture_filter=0
+
+[input]
+move_left={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":65), Object(InputEventScreenTouch)]
+}
+move_right={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":68), Object(InputEventScreenTouch)]
+}
+confirm={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":13), Object(InputEventScreenTouch)]
+}
+

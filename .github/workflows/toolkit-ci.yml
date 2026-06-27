@@ -1,0 +1,64 @@
+name: Godot toolkit demo
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TOOLKIT_REF: main
+  TOOLKIT_REPO: https://github.com/NonniGB/godot-production-toolkit.git
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run toolkit checks
+        uses: NonniGB/godot-production-toolkit/godot-ci-doctor-action@main
+        with:
+          project: .
+          config: godot-project-doctor.toml
+          reports-dir: reports/godot-project-doctor
+          fail-on: none
+          output-formats: json,markdown,html
+          tool-packages: >-
+            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-project-doctor"
+            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-export-preset-doctor"
+            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-input-map-auditor"
+            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-scene-signal-auditor"
+            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-mobile-perf-doctor"
+
+      - name: Upload toolkit reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: godot-doctor-reports
+          path: reports/godot-project-doctor
+
+  dashboard:
+    runs-on: ubuntu-latest
+    needs: doctor
+    if: always()
+    steps:
+      - name: Download toolkit reports
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-doctor-reports
+          path: reports/release-evidence
+
+      - name: Build release dashboard
+        uses: NonniGB/godot-production-toolkit/godot-release-dashboard-action@main
+        with:
+          reports-dir: reports/release-evidence
+          dashboard-dir: reports/release-dashboard
+          dashboard-title: Toolkit CI Demo
+          dashboard-description: Static dashboard built from the demo project's toolkit reports.
+          artifact-name: release-dashboard
+          tool-packages: >-
+            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-release-dashboard-kit"

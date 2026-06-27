@@ -1,0 +1,18 @@
+[project]
+path = "."
+reports_dir = "reports/godot-project-doctor"
+fail_on = "none"
+checks = ["export", "input", "signals", "mobile_perf"]
+
+[tools.export]
+args = ["--platform", "Android", "--fail-on", "none"]
+
+[tools.input]
+args = ["--require", "keyboard,touch", "--fail-on", "none"]
+
+[tools.signals]
+args = ["--fail-on", "none"]
+
+[tools.mobile_perf]
+args = ["--profile", "portrait-2d", "--fail-on", "none"]
+
