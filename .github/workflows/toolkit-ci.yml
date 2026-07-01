@@ -1,4 +1,5 @@
 name: Godot toolkit demo
+run-name: Toolkit demo evidence for ${{ github.ref_name }}
 
 on:
   push:
@@ -12,6 +13,8 @@ permissions:
 env:
   TOOLKIT_REF: main
   TOOLKIT_REPO: https://github.com/NonniGB/godot-production-toolkit.git
+  REPORTS_DIR: reports/godot-project-doctor
+  DASHBOARD_DIR: reports/release-dashboard
 
 jobs:
   doctor:
@@ -25,7 +28,7 @@ jobs:
           project: .
           config: godot-project-doctor.toml
           checks: export,input,signals,mobile_perf
-          reports-dir: reports/godot-project-doctor
+          reports-dir: ${{ env.REPORTS_DIR }}
           fail-on: none
           output-formats: json,markdown,html
           tool-packages: >-
@@ -35,12 +38,45 @@ jobs:
             "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-scene-signal-auditor"
             "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-mobile-perf-doctor"
 
+      - name: Write report artifact index
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p reports
+          cat > reports/artifact-index.md <<'EOF'
+          # Godot Toolkit Demo Artifacts
+
+          This run is a tiny public fixture for inspecting Godot Production Toolkit CI output.
+
+          ## Report bundle
+
+          Artifact: `godot-toolkit-demo-reports`
+
+          Paths:
+
+          - `godot-project-doctor/summary.json`
+          - `godot-project-doctor/summary.md`
+          - `godot-project-doctor/summary.html`
+
+          ## Dashboard
+
+          Artifact: `godot-toolkit-demo-dashboard`
+
+          Path:
+
+          - `index.html`
+          EOF
+
       - name: Upload toolkit reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: godot-doctor-reports
-          path: reports/godot-project-doctor
+          # Raw JSON/Markdown/HTML reports plus a small index for reviewers.
+          name: godot-toolkit-demo-reports
+          path: |
+            ${{ env.REPORTS_DIR }}
+            reports/artifact-index.md
+          retention-days: 14
 
   dashboard:
     runs-on: ubuntu-latest
@@ -50,16 +86,17 @@ jobs:
       - name: Download toolkit reports
         uses: actions/download-artifact@v4
         with:
-          name: godot-doctor-reports
+          name: godot-toolkit-demo-reports
           path: reports/release-evidence
 
       - name: Build release dashboard
         uses: NonniGB/godot-production-toolkit/godot-release-dashboard-action@main
         with:
+          # Publish a single static HTML review page from the report bundle.
           reports-dir: reports/release-evidence
-          dashboard-dir: reports/release-dashboard
+          dashboard-dir: ${{ env.DASHBOARD_DIR }}
           dashboard-title: Toolkit CI Demo
           dashboard-description: Static dashboard built from the demo project's toolkit reports.
-          artifact-name: release-dashboard
+          artifact-name: godot-toolkit-demo-dashboard
           tool-packages: >-
             "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-release-dashboard-kit"

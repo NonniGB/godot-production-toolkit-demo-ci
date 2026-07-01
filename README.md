@@ -1,5 +1,7 @@
 # Godot Production Toolkit CI Demo
 
+[![Godot toolkit demo](https://github.com/NonniGB/godot-production-toolkit-demo-ci/actions/workflows/toolkit-ci.yml/badge.svg)](https://github.com/NonniGB/godot-production-toolkit-demo-ci/actions/workflows/toolkit-ci.yml)
+
 Tiny public Godot 4 fixture for trying the Godot Production Toolkit actions in
 GitHub Actions.
 
@@ -14,6 +16,22 @@ make the CI workflow easy to inspect and copy.
 
 The fixture is MIT licensed so its workflow and tiny Godot files can be copied
 into test projects.
+
+## Inspect The Latest Run
+
+Open the
+[successful main-branch workflow runs](https://github.com/NonniGB/godot-production-toolkit-demo-ci/actions/workflows/toolkit-ci.yml?query=branch%3Amain+is%3Asuccess)
+and download these artifacts from the newest run:
+
+| Artifact | What to open |
+| --- | --- |
+| `godot-toolkit-demo-dashboard` | `index.html`, the static dashboard built from the demo reports. |
+| `godot-toolkit-demo-reports` | `artifact-index.md`, then `godot-project-doctor/summary.html`, `summary.md`, or `summary.json`. |
+
+The workflow source is
+[`.github/workflows/toolkit-ci.yml`](.github/workflows/toolkit-ci.yml). It keeps
+the report output under `reports/godot-project-doctor` and builds the dashboard
+under `reports/release-dashboard`.
 
 ## Run Locally
 
@@ -37,5 +55,5 @@ godot-release-dashboard build reports/godot-project-doctor --title "Toolkit CI D
 
 After the GitHub Actions workflow completes, open the run artifacts:
 
-- `godot-doctor-reports`: raw toolkit summaries.
-- `release-dashboard`: static dashboard built from those summaries.
+- `godot-toolkit-demo-reports`: raw toolkit summaries and an artifact index.
+- `godot-toolkit-demo-dashboard`: static dashboard built from those summaries.
