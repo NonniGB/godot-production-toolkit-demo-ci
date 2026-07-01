@@ -32,7 +32,7 @@ jobs:
           fail-on: none
           output-formats: json,markdown,html
           tool-packages: >-
-            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-project-doctor"
+            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-production-doctor"
             "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-export-preset-doctor"
             "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-input-map-auditor"
             "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-scene-signal-auditor"

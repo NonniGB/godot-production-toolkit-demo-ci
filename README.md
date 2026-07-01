@@ -39,7 +39,7 @@ Install the toolkit packages from the source repository, then run the same
 checks as CI:
 
 ```powershell
-python -m pip install "git+https://github.com/NonniGB/godot-production-toolkit.git@main#subdirectory=godot-project-doctor"
+python -m pip install "git+https://github.com/NonniGB/godot-production-toolkit.git@main#subdirectory=godot-production-doctor"
 python -m pip install "git+https://github.com/NonniGB/godot-production-toolkit.git@main#subdirectory=godot-export-preset-doctor"
 python -m pip install "git+https://github.com/NonniGB/godot-production-toolkit.git@main#subdirectory=godot-input-map-auditor"
 python -m pip install "git+https://github.com/NonniGB/godot-production-toolkit.git@main#subdirectory=godot-scene-signal-auditor"
