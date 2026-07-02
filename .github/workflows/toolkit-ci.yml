@@ -15,6 +15,9 @@ env:
   TOOLKIT_REPO: https://github.com/NonniGB/godot-production-toolkit.git
   REPORTS_DIR: reports/godot-project-doctor
   DASHBOARD_DIR: reports/release-dashboard
+  REAL_SAMPLE_REPO: godotengine/godot-demo-projects
+  REAL_SAMPLE_REF: 2adc0b8a5638a73117c4ebee5626a6d2ca65252d
+  REAL_SAMPLE_PATH: 2d/dodge_the_creeps
 
 jobs:
   doctor:
@@ -100,3 +103,70 @@ jobs:
           artifact-name: godot-toolkit-demo-dashboard
           tool-packages: >-
             "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-release-dashboard-kit"
+
+  real-godot-sample:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout public Godot sample
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REAL_SAMPLE_REPO }}
+          ref: ${{ env.REAL_SAMPLE_REF }}
+          path: fixtures/godot-demo-projects
+          sparse-checkout: ${{ env.REAL_SAMPLE_PATH }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install focused toolkit packages
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install \
+            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-export-preset-doctor" \
+            "git+${{ env.TOOLKIT_REPO }}@${{ env.TOOLKIT_REF }}#subdirectory=godot-input-map-auditor"
+
+      - name: Run checks on public Godot sample
+        shell: bash
+        run: |
+          set -euo pipefail
+          sample_project="fixtures/godot-demo-projects/${REAL_SAMPLE_PATH}"
+          report_dir="reports/real-godot-sample"
+          mkdir -p "${report_dir}"
+
+          godot-export-doctor "${sample_project}" \
+            --format json \
+            --output "${report_dir}/export-presets.json" \
+            --fail-on none
+
+          godot-input-audit "${sample_project}" \
+            --format json \
+            --output "${report_dir}/input-map.json" \
+            --fail-on none
+
+          cat > "${report_dir}/README.md" <<EOF
+          # Real Godot Sample Toolkit Reports
+
+          Source: \`${REAL_SAMPLE_REPO}/${REAL_SAMPLE_PATH}\`
+
+          Ref: \`${REAL_SAMPLE_REF}\`
+
+          License: MIT, from the upstream sample repository.
+
+          Reports:
+
+          - \`export-presets.json\`: export preset readiness for the pinned public sample.
+          - \`input-map.json\`: input action/device coverage for the pinned public sample.
+          EOF
+
+      - name: Upload public sample reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: godot-toolkit-real-sample-reports
+          path: reports/real-godot-sample
+          retention-days: 14
